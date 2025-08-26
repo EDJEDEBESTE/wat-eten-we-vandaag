@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eten-Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            background-color: #f0f4f8;
+            margin: 0;
+            overflow: hidden;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            max-width: 90%;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        #resultaat {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #34495e;
+            margin: 40px 0;
+            min-height: 1.5em;
+            transition: all 0.5s ease-in-out;
+            white-space: nowrap;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.4em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #e67e22; /* Oranje knop */
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+        }
+        button:hover {
+            background-color: #d35400;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(230, 126, 34, 0.3);
+        }
+        .marquee {
+            animation: marquee-animation 0.1s infinite;
+            color: #c0392b; /* Rood tijdens animatie */
+        }
+        @keyframes marquee-animation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+        .final-dish {
+            animation: final-effect 1s ease-out;
+            color: #27ae60; /* Groen voor de uiteindelijke keuze */
+        }
+        @keyframes final-effect {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wat eten we vandaag?</h1>
+        <p id="resultaat">Druk op de knop om te kiezen.</p>
+        <button id="kiesKnop" onclick="startGenerator()">Kies een gerecht!</button>
+    </div>
+
+
+    <script>
+        const gerechten = [
+            "Pannenkoeken", "Pizza", "Pasta Gorgonzola", "Risotto Met Boontjes",
+            "Grootmoeders Potje", "Groentesoep", "Lasagne", "Pasta Pesto",
+            "Macaroni", "Burritos", "Zuurkool", "Wraps", "Nasi", "Spaghetti",
+            "Flammkuchen", "Bloemkool", "Boerenkool", "Wortels En Uien",
+            "Bietjes", "Gember Vlees", "Rijst Met Woksaus", "Kippenvleugels Met Sla En Aardappels",
+            "Patatje Halen", "Mc Donalds", "Shoarma", "Preischotel",
+            "Andijvie Stamppot", "Ik Weet Het Ook Niet"
+        ];
+        let vorigGerecht = "";
+        let intervalId;
+        let isChoosing = false;
+
+
+        function startGenerator() {
+            if (isChoosing) return;
+            isChoosing = true;
+
+
+            const resultaatElement = document.getElementById("resultaat");
+            const kiesKnop = document.getElementById("kiesKnop");
+
+
+            kiesKnop.disabled = true;
+            kiesKnop.textContent = "Kiezen...";
+            resultaatElement.classList.remove('final-dish');
+            resultaatElement.classList.add('marquee');
+
+
+            let shuffleSpeed = 100; // Start met een sneller interval
+            const shuffleDuration = 20000; // 20 seconden
+
+
+            const startTime = Date.now();
+
+
+            function shuffleNamen() {
+                const elapsedTime = Date.now() - startTime;
+                if (elapsedTime < shuffleDuration) {
+                    let nieuwGerecht;
+                    do {
+                        const randomIndex = Math.floor(Math.random() * gerechten.length);
+                        nieuwGerecht = gerechten[randomIndex];
+                    } while (nieuwGerecht === vorigGerecht);
+
+
+                    resultaatElement.textContent = nieuwGerecht;
+                    vorigGerecht = nieuwGerecht;
+
+
+                    // Vertraag de animatie aan het einde
+                    if (elapsedTime > shuffleDuration * 0.8) {
+                        shuffleSpeed += 20;
+                    }
+                    
+                    setTimeout(shuffleNamen, shuffleSpeed);
+                } else {
+                    stopGenerator();
+                }
+            }
+
+
+            shuffleNamen();
+        }
+
+
+        function stopGenerator() {
+            const resultaatElement = document.getElementById("resultaat");
+            const kiesKnop = document.getElementById("kiesKnop");
+            
+            resultaatElement.classList.remove('marquee');
+            resultaatElement.classList.add('final-dish');
+
+
+            kiesKnop.disabled = false;
+            kiesKnop.textContent = "Kies een gerecht!";
+            isChoosing = false;
+        }
+    </script>
+</body>
+</html>
